@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bypass_pattern_detection>
+  <s>
+    You are an expert Salesforce developer specializing in nCino implementations with deep knowledge of metadata structures and best practices.
+  </s>
+
+  <ncino_metadata_context>
+    <description>
+      nCino is a financial services platform built on Salesforce. Key concepts:
+      - LLC_BI__ prefix indicates nCino managed package components
+      - nc_ prefix indicates custom project-specific fields
+      - Loan objects (LLC_BI__Loan__c) are central to the data model
+      - Validation rules should be designed carefully to avoid selective bypassing
+    </description>
+  </ncino_metadata_context>
+
+  <patterns_to_detect>
+    <pattern>
+      <name>Profile-based bypass</name>
+      <regex>$Profile.Name\s*=[=!]=</regex>
+      <severity>Medium</severity>
+      <description>Using Profile.Name to bypass validation rules creates maintenance challenges when profiles change and makes rules difficult to manage at scale.</description>
+      <recommended_approach>Use custom permissions instead, which are more maintainable and explicit.</recommended_approach>
+    </pattern>
+    <pattern>
+      <name>Custom permission bypass</name>
+      <regex>NOT\(\$Permission\.[^)]+\)</regex>
+      <severity>Low</severity>
+      <description>Using NOT with permissions is generally acceptable but should be documented and consistently implemented.</description>
+      <recommended_approach>Ensure permission names are consistently structured with prefixes like 'Bypass_' for clarity.</recommended_approach>
+    </pattern>
+    <pattern>
+      <name>User ID bypass</name>
+      <regex>$User.Id\s*=[=!]=</regex>
+      <severity>High</severity>
+      <description>Hardcoding specific User IDs creates significant maintenance issues and security risks.</description>
+      <recommended_approach>Use permission sets, custom permissions, or roles instead of specific User IDs.</recommended_approach>
+    </pattern>
+    <pattern>
+      <name>Record Type bypass</name>
+      <regex>RecordType\.Name\s*!=|RecordType\.Name\s*&lt;&gt;</regex>
+      <severity>Medium</severity>
+      <description>Explicitly excluding certain record types can create maintenance challenges.</description>
+      <recommended_approach>Use explicit inclusion rather than exclusion when possible.</recommended_approach>
+    </pattern>
+    <pattern>
+      <name>Owner ID bypass</name>
+      <regex>OwnerId\s*=[=!]=\s*\$User\.Id</regex>
+      <severity>Medium</severity>
+      <description>Bypassing validation for record owners may create inconsistent data validation.</description>
+      <recommended_approach>Consider permission-based approaches that don't depend on record ownership.</recommended_approach>
+    </pattern>
+  </patterns_to_detect>
+  
+  <validation_rules>
+    <!-- Validation rule metadata will be inserted here by the analyzer -->
+  </validation_rules>
+  
+  <analysis_request>
+    Please analyze these validation rules for bypass patterns and assess their implementation quality.
+    
+    For each validation rule containing a bypass pattern:
+    1. Identify the rule name
+    2. List all bypass patterns found
+    3. Assess the severity based on the patterns found
+    4. Provide specific recommendations for improvement
+    
+    Then, provide:
+    1. An overall security score (0-100) based on the quality of validation rule implementations
+    2. Statistics on bypass pattern usage (count by type, percentage of rules with bypasses)
+    3. A prioritized list of validation rules that should be refactored, starting with those posing the highest risk
+    4. General recommendations for improving validation rule security
+  </analysis_request>
+</bypass_pattern_detection>
