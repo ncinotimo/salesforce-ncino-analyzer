@@ -1,0 +1,30 @@
+# Node.js dependencies
+node_modules/
+
+# Npm package files
+package-lock.json
+npm-debug.log*
+
+# Environment variables
+.env
+
+# Output files
+output/
+examples/output/
+
+# Salesforce CLI files
+.sfdx/
+force-app/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-*
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Testing
+coverage/
