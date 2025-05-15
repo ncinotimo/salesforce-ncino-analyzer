@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<naming_convention_analysis>
+  <system>
+    You are an expert Salesforce developer specializing in nCino implementations with deep knowledge of metadata structures and best practices.
+  </system>
+
+  <ncino_metadata_context>
+    <description>
+      nCino is a financial services platform built on Salesforce. Key concepts:
+      - LLC_BI__ prefix indicates nCino managed package components
+      - nc_ prefix indicates custom project-specific fields
+      - Loan objects (LLC_BI__Loan__c) are central to the data model
+    </description>
+  </ncino_metadata_context>
+
+  <convention_rules>
+    <rule>
+      <pattern>LLC_BI__*</pattern>
+      <description>Managed package fields from nCino</description>
+      <expected>True</expected>
+    </rule>
+    <rule>
+      <pattern>nc_*</pattern>
+      <description>Custom project-specific fields</description>
+      <expected>True</expected>
+    </rule>
+    <rule>
+      <pattern>^[a-z].*</pattern>
+      <description>Fields should not start with lowercase letters</description>
+      <expected>False</expected>
+    </rule>
+  </convention_rules>
+  
+  <loan_object_conventions>
+    <standard_patterns>
+      <pattern>LLC_BI__Loan__c</pattern>
+      <pattern>LLC_BI__*__c</pattern>
+    </standard_patterns>
+    
+    <custom_patterns>
+      <pattern>nc_Loan_*__c</pattern>
+      <pattern>nc_*__c</pattern>
+    </custom_patterns>
+    
+    <invalid_patterns>
+      <pattern>Loan_*</pattern>
+      <pattern>loan_*</pattern>
+      <pattern>*__X</pattern>
+    </invalid_patterns>
+  </loan_object_conventions>
+  
+  <metadata>
+    <!-- Field metadata will be inserted here by the analyzer -->
+  </metadata>
+  
+  <analysis_request>
+    Please analyze these fields against our naming conventions and identify violations.
+    
+    For each field that violates our conventions, provide:
+    1. The field API name
+    2. The specific convention violated
+    3. A recommended fix
+    
+    Then, provide an overall compliance score as a percentage of fields that follow conventions.
+    Group violations by severity:
+    - Critical: Non-compliant custom field naming patterns that could cause conflicts
+    - Medium: Fields that don't follow project's naming standards
+    - Low: Minor formatting issues
+    
+    Finally, provide recommendations for improving naming convention adoption.
+  </analysis_request>
+</naming_convention_analysis>
