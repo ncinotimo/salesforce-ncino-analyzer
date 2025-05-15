@@ -1,43 +1,33 @@
-# Claude-powered Salesforce/nCino Analyzer (MCP Architecture)
+# Salesforce/nCino Analyzer MCP Server
 
-This project implements a Claude-based analyzer for Salesforce/nCino configurations using an MCP (Model-Controller-Presenter) architecture. Users interact directly with Claude, which serves as the presenter layer, while all the complex extraction and analysis happens in the background.
+This project implements an MCP (Model Context Protocol) server for analyzing Salesforce/nCino configurations. This server can be connected to Claude or other MCP-compatible LLMs to provide specialized analysis of Salesforce metadata.
 
-## How It Works
+## What is MCP?
 
-1. **Presenter (Claude)**: Users interact with Claude through the desktop application. Claude collects inputs, triggers the analysis, and formats results into user-friendly reports.
+Model Context Protocol (MCP) is an open-source standard for connecting AI models to systems, data, knowledge, and tools. This project leverages MCP to allow Claude to directly analyze Salesforce/nCino configurations without having to write custom code in the prompt.
 
-2. **Controller**: Background scripts coordinate the extraction of metadata, invoke the analyzers, and manage the workflow.
+## Features
 
-3. **Model**: Core analyzers process the metadata, detect patterns, and generate findings.
+- **Expose Salesforce Metadata Resources**: Provides access to field definitions, validation rules, and Apex triggers
+- **Specialized Analysis Tools**: Detect naming convention violations and security bypass patterns
+- **Scoring and Recommendations**: Generate health scores and actionable recommendations
+- **Interactive Visualizations**: Create charts and diagrams for analysis results
 
-## Key Features
+## Architecture
 
-- Extract metadata using SFDX or VS Code
-- Analyze naming conventions and detect violations
-- Identify bypass patterns in validation rules, flows, and Apex triggers
-- Generate executive summaries with visualization dashboards
-- Present all results directly in Claude
+This MCP server follows the MCP specification, providing:
 
-## User Workflow
+1. **Resources**: Salesforce metadata objects (fields, validation rules, triggers)
+2. **Tools**: Specialized analysis functions
+3. **Prompts**: Pre-defined templates for common analysis scenarios
 
-1. User uploads Salesforce/nCino metadata files to Claude or provides org credentials
-2. Claude triggers the background analysis process
-3. Results are formatted and presented directly in the Claude interface
-4. User can ask follow-up questions about the findings
+## Getting Started
 
-## Project Structure
+See the [documentation](./docs/) for detailed setup and usage instructions.
 
-```
-├── docs/                    # Documentation files
-├── scripts/                 # Extraction and processing scripts
-├── prompts/                 # Claude prompt templates
-├── templates/               # Dashboard and report templates
-├── src/                     # Core implementation code
-│   ├── models/              # Data processing and analysis
-│   ├── controllers/         # Workflow management
-│   └── integrations/        # Claude API integration
-└── examples/                # Example outputs and configurations
-```
+## Integration with Claude
+
+This server is designed to be used with Claude through the MCP client. Once connected, Claude can access the specialized analysis capabilities and provide insights in natural language.
 
 ## License
 
