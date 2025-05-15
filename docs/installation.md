@@ -1,118 +1,127 @@
-# Installation and Usage Guide
+# Using the Claude-powered Salesforce/nCino Analyzer
 
-This guide provides step-by-step instructions for installing and using the nCino Analyzer tool.
+This guide explains how to use the Salesforce/nCino Analyzer directly within Claude.
 
-## Prerequisites
+## Overview
 
-Before using the nCino Analyzer, ensure you have the following:
+The Salesforce/nCino Analyzer uses an MCP (Model-Controller-Presenter) architecture where:
 
-1. Node.js v14.0.0 or later
-2. Salesforce CLI (SFDX) installed
-3. Access to a Salesforce org with nCino installed
-4. Claude API key for analysis (Anthropic's Claude model)
+1. **Presenter (Claude)**: You interact directly with Claude, which collects inputs, triggers the analysis, and formats results into user-friendly reports.
 
-## Installation
+2. **Controller**: Behind the scenes, the analyzer coordinates the extraction of metadata, invokes the analyzers, and manages the workflow.
 
-1. Clone the repository:
+3. **Model**: Core analyzers process the metadata, detect patterns, and generate findings.
 
-```bash
-git clone https://github.com/ncinotimo/salesforce-ncino-analyzer.git
-cd salesforce-ncino-analyzer
-```
+## How to Use the Analyzer
 
-2. Install dependencies:
+### Option 1: Upload Metadata Files
 
-```bash
-npm install
-```
+You can upload Salesforce/nCino metadata files directly to Claude for analysis:
 
-3. Set up your Claude API key as an environment variable:
+1. Export your metadata files from Salesforce using SFDX, Workbench, or VS Code
+2. Upload the files to Claude (supported formats: JSON, XML, CSV)
+3. Ask Claude to analyze your Salesforce/nCino configuration
 
-```bash
-# For Linux/macOS
-export CLAUDE_API_KEY=your_claude_api_key_here
-
-# For Windows Command Prompt
-set CLAUDE_API_KEY=your_claude_api_key_here
-
-# For Windows PowerShell
-$env:CLAUDE_API_KEY="your_claude_api_key_here"
-```
-
-## Step 1: Extract nCino Metadata
-
-Use the metadata extraction script to pull configuration data from your Salesforce org:
-
-```bash
-# Connect to your Salesforce org first
-sfdx force:auth:web:login -a YourOrgAlias
-
-# Run the metadata extraction
-node scripts/ncino-metadata-extractor.js --org YourOrgAlias --output ./output
-```
-
-This will extract:
-- The nCino Loan object and its fields
-- Validation rules
-- Apex triggers
-- Flows
-
-The extracted metadata will be saved to the `./output` directory in both raw form and Claude-friendly formats.
-
-## Step 2: Run the Analysis
-
-Once metadata extraction is complete, run the analyzer:
-
-```bash
-node src/cli.js --fields ./output/loan_fields.json --validation-rules ./output/validation_rules.json --triggers ./output/loan_triggers.json
-```
-
-### Options:
+Example prompts:
 
 ```
---api-key <key>             Claude API key (if not set as environment variable)
---fields <path>             Path to fields JSON file
---validation-rules <path>   Path to validation rules JSON file
---triggers <path>           Path to triggers JSON file
---output-dir <path>         Directory to store output files (default: ./output)
---prompt-dir <path>         Directory containing prompt templates (default: ./prompts)
---skip-naming               Skip naming convention analysis
---skip-validation           Skip validation rule analysis
---skip-triggers             Skip Apex trigger analysis
+Can you analyze these Salesforce field metadata files for naming convention violations?
 ```
 
-## Step 3: Review the Analysis Results
+```
+Please check these validation rules for bypass patterns.
+```
 
-After running the analyzer, the following output files will be generated in the output directory:
+### Option 2: Provide Salesforce Org Credentials
 
-1. `naming_convention_analysis.md` - Analysis of field naming conventions
-2. `validation_rule_analysis.md` - Analysis of validation rule bypass patterns
-3. `apex_trigger_analysis.md` - Analysis of Apex trigger bypass patterns
-4. `comprehensive_report.md` - Consolidated report with all findings and recommendations
+You can provide your Salesforce org credentials for direct extraction:
+
+```
+Can you analyze my nCino Loan object configuration? Here are my Salesforce credentials:
+Username: your-username@example.com
+Password: your-password
+```
+
+Or using a session ID:
+
+```
+Please analyze my Salesforce configuration using this session info:
+Instance URL: https://yourinstance.my.salesforce.com
+Access Token: 00D...
+```
+
+### Option 3: Provide Raw JSON Data
+
+You can directly paste JSON metadata into your conversation with Claude:
+
+```
+Can you analyze these nCino field definitions?
+
+[
+  {
+    "apiName": "LLC_BI__Amount__c",
+    "label": "Loan Amount",
+    "type": "Currency",
+    "description": "The total amount of the loan."
+  },
+  {
+    "apiName": "customField__c",
+    "label": "Custom Field",
+    "type": "Text",
+    "description": "A custom field with non-compliant naming."
+  }
+]
+```
+
+## Analysis Types
+
+You can specify which types of analysis you want to perform:
+
+1. **Naming Convention Analysis**: Checks field naming against nCino standards
+2. **Validation Rule Analysis**: Detects bypass patterns in validation rules
+3. **Apex Trigger Analysis**: Identifies security issues in triggers
+
+Example:
+
+```
+Please analyze my Salesforce metadata, focusing only on naming conventions and validation rules (skip the trigger analysis).
+```
 
 ## Understanding the Results
 
-The analysis reports contain:
+The analyzer provides results in multiple sections:
 
-1. **Executive Summary** - High-level overview of findings
-2. **Specific Violations** - Detailed list of items that don't conform to best practices
-3. **Recommendations** - Specific suggestions for improvement
-4. **Overall Scores** - Assessment of compliance across different dimensions
+1. **Executive Summary**: High-level overview with key findings and risk assessment
+2. **Overall Score**: Numeric score (0-100) rating your configuration health
+3. **Detailed Findings**: Specific issues found in your configuration
+4. **Recommendations**: Prioritized list of actions to improve your configuration
+5. **Visualizations**: Charts and graphs illustrating the findings
 
-## Customizing the Analysis
+## Tips for Best Results
 
-You can customize the analysis criteria by modifying the prompt templates in the `prompts/` directory:
+- Upload specific metadata files rather than entire package.xml extracts
+- If analyzing a large org, focus on one object or component type at a time
+- For naming convention analysis, include field metadata with API names and types
+- For validation rule analysis, ensure formulas are included in the metadata
+- For trigger analysis, include the full trigger code, not just metadata
 
-- `naming_convention_analysis.xml` - Rules for field naming conventions
-- `validation_rule_analysis.xml` - Patterns to detect in validation rules
-- `flow_bypass_detection.xml` - Patterns to detect in flows
+## Example Workflow
 
-## Troubleshooting
+1. Extract your Salesforce metadata:
+   ```bash
+   sfdx force:source:retrieve -m "CustomObject:LLC_BI__Loan__c,CustomField:LLC_BI__Loan__c.*,ValidationRule:LLC_BI__Loan__c.*" -u your-org-alias
+   ```
 
-1. **API Key Issues**: Ensure your Claude API key is correctly set and has sufficient permissions.
-2. **Metadata Extraction Failures**: Check that you have the correct permissions in Salesforce and that the nCino package is installed.
-3. **Analysis Timeouts**: For large organizations, try analyzing one component at a time using the `--skip-*` options.
+2. Upload the extracted metadata files to Claude
 
-## License
+3. Ask Claude to analyze your configuration:
+   ```
+   Can you analyze these Salesforce/nCino configuration files and identify any issues with naming conventions or security patterns?
+   ```
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+4. Review the analysis results
+
+5. Ask follow-up questions about specific findings or recommendations:
+   ```
+   Can you explain more about the bypass pattern you found in the LLC_BI__Loan_Status_Validation rule?
+   ```
